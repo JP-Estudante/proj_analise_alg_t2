@@ -1,0 +1,29 @@
+[project]
+name = "comparacao-caminho-minimo"
+version = "0.1.0"
+description = "Comparação acadêmica entre Dijkstra e Floyd-Warshall para caminhos mínimos."
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0",
+    "plotly>=5.20",
+    "streamlit>=1.35",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+caminho-minimo = "caminho_minimo.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
