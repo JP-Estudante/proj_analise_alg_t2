@@ -31,7 +31,8 @@ st.markdown(
         --mint: #7AE2CF;
         --primary: #111844;
         --primary-hover: #1D2A68;
-        --gold: #C28A00;
+        --gold: #D19600;
+        --gold-soft: #FFE08A;
         --ink: #111844;
         --bg: #FFF8DD;
         --panel: #FFFFFF;
@@ -43,7 +44,8 @@ st.markdown(
     }
 
     .stApp {
-        background: linear-gradient(180deg, #FFFFFF 0%, #FFFDF3 48%, var(--bg) 100%);
+        background:
+            linear-gradient(180deg, #FFFFFF 0%, #FFF8DD 46%, #FDEB9E 100%);
         color: var(--text);
     }
 
@@ -58,9 +60,9 @@ st.markdown(
     }
 
     section[data-testid="stSidebar"] {
-        background: #FFFDF3;
-        border-right: 1px solid var(--line);
-        box-shadow: 6px 0 24px rgba(6, 32, 43, 0.08);
+        background: linear-gradient(180deg, #FFFFFF 0%, #FFF8DD 100%);
+        border-right: 1px solid rgba(17, 24, 68, 0.12);
+        box-shadow: 8px 0 28px rgba(17, 24, 68, 0.10);
     }
 
     section[data-testid="stSidebar"] h2,
@@ -73,7 +75,7 @@ st.markdown(
 
     section[data-testid="stSidebar"] div[data-baseweb="input"] input {
         background: #FFFFFF;
-        border: 1px solid var(--line);
+        border: 1px solid #D19600;
         color: var(--text);
     }
 
@@ -87,7 +89,7 @@ st.markdown(
         height: 2.8rem;
         font-size: 1rem;
         font-weight: 700;
-        box-shadow: 0 10px 20px rgba(17, 24, 68, 0.24);
+        box-shadow: 0 14px 24px rgba(17, 24, 68, 0.28);
     }
 
     .stButton > button *,
@@ -112,11 +114,13 @@ st.markdown(
     }
 
     .hero {
-        padding: 22px 26px;
-        border: 1px solid rgba(17, 24, 68, 0.20);
+        padding: 26px 28px;
+        border: 1px solid rgba(17, 24, 68, 0.22);
         border-radius: 10px;
-        background: linear-gradient(135deg, #FFFFFF, var(--accent-soft));
-        box-shadow: 0 18px 36px rgba(6, 32, 43, 0.08);
+        background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(122, 226, 207, 0.38)),
+            linear-gradient(90deg, rgba(253, 235, 158, 0.48), rgba(255, 255, 255, 0));
+        box-shadow: 0 20px 42px rgba(17, 24, 68, 0.12);
         margin-bottom: 18px;
     }
 
@@ -128,13 +132,23 @@ st.markdown(
         font-weight: 800;
     }
 
+    .hero-kicker {
+        color: #D19600;
+        font-size: 0.92rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+    }
+
     .metric-card {
         min-height: 112px;
         padding: 18px 18px 16px 18px;
-        border: 1px solid rgba(17, 24, 68, 0.18);
+        border: 1px solid rgba(17, 24, 68, 0.16);
+        border-top: 4px solid #D19600;
         border-radius: 10px;
-        background: #FFFFFF;
-        box-shadow: 0 12px 28px rgba(6, 32, 43, 0.07);
+        background: linear-gradient(180deg, #FFFFFF 0%, #FFFDF3 100%);
+        box-shadow: 0 14px 30px rgba(17, 24, 68, 0.10);
         margin-bottom: 10px;
     }
 
@@ -146,6 +160,31 @@ st.markdown(
         letter-spacing: 0.04em;
         margin-bottom: 10px;
         white-space: nowrap;
+    }
+
+    .metric-heading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .metric-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: #111844;
+        color: #FFFBEB;
+        font-size: 0.86rem;
+        font-weight: 900;
+        line-height: 1;
+    }
+
+    .metric-heading .metric-label {
+        margin-bottom: 0;
     }
 
     .metric-value {
@@ -226,12 +265,15 @@ def short_algorithm_name(name: str) -> str:
     return name
 
 
-def render_metric_card(label: str, value: str, detail: str = "") -> None:
+def render_metric_card(label: str, value: str, detail: str = "", icon: str = "•") -> None:
     detail_html = f"<div class='metric-detail'>{detail}</div>" if detail else ""
     st.markdown(
         f"""
         <div class="metric-card">
-            <div class="metric-label">{label}</div>
+            <div class="metric-heading">
+                <span class="metric-icon">{icon}</span>
+                <div class="metric-label">{label}</div>
+            </div>
             <div class="metric-value">{value}</div>
             {detail_html}
         </div>
@@ -242,13 +284,46 @@ def render_metric_card(label: str, value: str, detail: str = "") -> None:
 
 COLOR_MAP = {
     "Dijkstra (todas as origens)": "#111844",
-    "Floyd-Warshall": "#C28A00",
+    "Floyd-Warshall": "#D19600",
 }
+
+
+def style_plotly_chart(fig, height: int = 380) -> None:
+    fig.update_layout(
+        template="plotly_white",
+        legend_title_text="",
+        hovermode="x unified",
+        height=height,
+        margin=dict(l=12, r=12, t=18, b=12),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="#FFFEF8",
+        font=dict(color="#111844"),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    )
+    fig.update_xaxes(gridcolor="#E6D99B", zerolinecolor="#D19600")
+    fig.update_yaxes(gridcolor="#E6D99B", zerolinecolor="#D19600")
+
+
+def build_time_ratio_dataframe(dataframe: pd.DataFrame) -> pd.DataFrame:
+    pivot = dataframe.pivot(index="vertices", columns="algorithm", values="avg_time_seconds").reset_index()
+    dijkstra_column = "Dijkstra (todas as origens)"
+    floyd_column = "Floyd-Warshall"
+
+    if dijkstra_column not in pivot or floyd_column not in pivot:
+        return pd.DataFrame(columns=["vertices", "ratio"])
+
+    return pd.DataFrame(
+        {
+            "vertices": pivot["vertices"],
+            "ratio": pivot[floyd_column] / pivot[dijkstra_column],
+        }
+    )
 
 
 st.markdown(
     """
     <div class="hero">
+        <div class="hero-kicker">Problema Do Caminho Mínimo</div>
         <h1>Dijkstra X Floyd-Warshall</h1>
     </div>
     """,
@@ -284,7 +359,12 @@ with st.sidebar:
         step=1,
         help="Mantém os grafos reproduzíveis. Use o mesmo valor para repetir exatamente os mesmos testes.",
     )
-    run_button = st.button("Executar Comparação", type="primary", use_container_width=True)
+    run_button = st.button(
+        "Executar Comparação",
+        type="primary",
+        icon=":material/play_arrow:",
+        use_container_width=True,
+    )
 
 try:
     sizes = parse_sizes(raw_sizes)
@@ -305,20 +385,22 @@ lowest_memory = largest_df.loc[largest_df["avg_peak_memory_kb"].idxmin()]
 
 metric_cols = st.columns(4)
 with metric_cols[0]:
-    render_metric_card("Maior Grafo", f"{largest_size} Vértices", f"{int(largest_df['edges'].max())} Arestas")
+    render_metric_card("Maior Grafo", f"{largest_size} Vértices", f"{int(largest_df['edges'].max())} Arestas", "V")
 with metric_cols[1]:
-    render_metric_card("Densidade", f"{float(df['density'].iloc[0]):.2f}", f"{int(df['repetitions'].iloc[0])} Repetições")
+    render_metric_card("Densidade", f"{float(df['density'].iloc[0]):.2f}", f"{int(df['repetitions'].iloc[0])} Repetições", "%")
 with metric_cols[2]:
     render_metric_card(
         "Mais Rápido",
         short_algorithm_name(str(fastest["algorithm"])),
         f"{float(fastest['avg_time_seconds']):.6f} s No Maior Grafo",
+        "T",
     )
 with metric_cols[3]:
     render_metric_card(
         "Menor Memória",
         short_algorithm_name(str(lowest_memory["algorithm"])),
         f"{float(lowest_memory['avg_peak_memory_kb']):.2f} KB No Maior Grafo",
+        "M",
     )
 
 tab_overview, tab_table = st.tabs(["Gráficos", "Tabela"])
@@ -341,21 +423,9 @@ with tab_overview:
                 "algorithm": "Algoritmo",
             },
         )
-        fig_time.update_traces(line_width=3, marker_size=8)
-        fig_time.update_layout(
-            template="plotly_white",
-            legend_title_text="",
-            hovermode="x unified",
-            height=420,
-            margin=dict(l=12, r=12, t=18, b=12),
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="#FFFFFF",
-            font=dict(color="#111844"),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        )
-        fig_time.update_xaxes(gridcolor="#E8DFAF", zerolinecolor="#E6D99B")
-        fig_time.update_yaxes(gridcolor="#E8DFAF", zerolinecolor="#E6D99B")
-        st.plotly_chart(fig_time, use_container_width=True)
+        fig_time.update_traces(line_width=3.5, marker_size=9)
+        style_plotly_chart(fig_time, height=420)
+        st.plotly_chart(fig_time, use_container_width=True, config={"displayModeBar": False})
 
     with col_memory:
         st.markdown("<div class='section-title'>Uso Aproximado De Memória</div>", unsafe_allow_html=True)
@@ -372,21 +442,82 @@ with tab_overview:
                 "algorithm": "Algoritmo",
             },
         )
-        fig_memory.update_traces(line_width=3, marker_size=8)
-        fig_memory.update_layout(
-            template="plotly_white",
-            legend_title_text="",
-            hovermode="x unified",
-            height=420,
-            margin=dict(l=12, r=12, t=18, b=12),
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="#FFFFFF",
-            font=dict(color="#111844"),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        fig_memory.update_traces(line_width=3.5, marker_size=9)
+        style_plotly_chart(fig_memory, height=420)
+        st.plotly_chart(fig_memory, use_container_width=True, config={"displayModeBar": False})
+
+    st.markdown("<div class='section-title'>Comparações Complementares</div>", unsafe_allow_html=True)
+    col_time_bar, col_ratio, col_edges = st.columns(3)
+
+    with col_time_bar:
+        st.markdown("<div class='section-title'>Tempo Por Algoritmo</div>", unsafe_allow_html=True)
+        fig_time_bar = px.bar(
+            df,
+            x="vertices",
+            y="avg_time_seconds",
+            color="algorithm",
+            barmode="group",
+            color_discrete_map=COLOR_MAP,
+            labels={
+                "vertices": "Vértices",
+                "avg_time_seconds": "Tempo Médio (s)",
+                "algorithm": "Algoritmo",
+            },
         )
-        fig_memory.update_xaxes(gridcolor="#E8DFAF", zerolinecolor="#E6D99B")
-        fig_memory.update_yaxes(gridcolor="#E8DFAF", zerolinecolor="#E6D99B")
-        st.plotly_chart(fig_memory, use_container_width=True)
+        fig_time_bar.update_traces(marker_line_width=0, opacity=0.96)
+        style_plotly_chart(fig_time_bar, height=340)
+        st.plotly_chart(fig_time_bar, use_container_width=True, config={"displayModeBar": False})
+
+    with col_ratio:
+        st.markdown("<div class='section-title'>Razão De Tempo</div>", unsafe_allow_html=True)
+        ratio_df = build_time_ratio_dataframe(df)
+        fig_ratio = px.bar(
+            ratio_df,
+            x="vertices",
+            y="ratio",
+            labels={
+                "vertices": "Vértices",
+                "ratio": "Floyd / Dijkstra",
+            },
+            color_discrete_sequence=["#D19600"],
+        )
+        fig_ratio.add_hline(
+            y=1,
+            line_dash="dash",
+            line_color="#7288AE",
+            annotation_text="Mesmo tempo",
+            annotation_position="top left",
+        )
+        fig_ratio.update_traces(
+            marker_line_width=0,
+            opacity=0.96,
+            hovertemplate="Vértices: %{x}<br>Razão: %{y:.2f}x<extra></extra>",
+        )
+        style_plotly_chart(fig_ratio, height=340)
+        fig_ratio.update_layout(showlegend=False)
+        st.plotly_chart(fig_ratio, use_container_width=True, config={"displayModeBar": False})
+
+    with col_edges:
+        st.markdown("<div class='section-title'>Arestas Por Tamanho</div>", unsafe_allow_html=True)
+        edges_df = df.drop_duplicates("vertices").sort_values("vertices")
+        fig_edges = px.bar(
+            edges_df,
+            x="vertices",
+            y="edges",
+            labels={
+                "vertices": "Vértices",
+                "edges": "Arestas",
+            },
+            color_discrete_sequence=["#5E7FB8"],
+        )
+        fig_edges.update_traces(
+            marker_line_width=0,
+            opacity=0.96,
+            hovertemplate="Vértices: %{x}<br>Arestas: %{y}<extra></extra>",
+        )
+        style_plotly_chart(fig_edges, height=340)
+        fig_edges.update_layout(showlegend=False)
+        st.plotly_chart(fig_edges, use_container_width=True, config={"displayModeBar": False})
 
 with tab_table:
     formatted_df = df.rename(
@@ -436,7 +567,7 @@ with tab_table:
                 {
                     "selector": "tbody td",
                     "props": [
-                        ("background-color", "#F3E9BE"),
+                        ("background-color", "#F8EDBA"),
                         ("color", "#111844"),
                         ("padding", "11px 14px"),
                         ("border-top", "1px solid #DACD95"),
@@ -446,13 +577,13 @@ with tab_table:
                 {
                     "selector": "tbody tr:nth-child(even) td",
                     "props": [
-                        ("background-color", "#EEE2AD"),
+                        ("background-color", "#F1DF9E"),
                     ],
                 },
                 {
                     "selector": "tbody tr:hover td",
                     "props": [
-                        ("background-color", "#E7D89F"),
+                        ("background-color", "#FDEB9E"),
                     ],
                 },
             ]
@@ -473,5 +604,6 @@ with tab_table:
         file_name="comparacao_caminho_minimo.csv",
         mime="text/csv",
         type="primary",
+        icon=":material/download:",
         use_container_width=False,
     )
