@@ -58,27 +58,29 @@ pip install -e .
 
 ## Execução simplificada
 
-Use sempre o arquivo `executar.py` na raiz do projeto.
+Use o arquivo `executar.py`, localizado na raiz do projeto, para executar tudo de forma simples.
 
-Para rodar os resultados no terminal e, depois de pressionar Enter, abrir o Streamlit:
+Para mostrar os resultados no terminal e, depois de pressionar Enter, abrir a interface Streamlit:
 
 ```bash
 python executar.py
 ```
 
-Para rodar somente os resultados no terminal:
+Para executar somente a comparação no terminal:
 
 ```bash
 python executar.py --terminal
 ```
 
-Para abrir somente o Streamlit:
+Para abrir somente a interface Streamlit:
 
 ```bash
 python executar.py --streamlit
 ```
 
-Antes de usar o Streamlit, instale as dependências:
+Esse é o fluxo recomendado para apresentação, pois primeiro mostra uma saída simples no terminal e depois abre o dashboard visual.
+
+Antes de executar o projeto, instale as dependências:
 
 ```bash
 pip install -r requirements.txt
@@ -106,13 +108,22 @@ O terminal mostra uma tabela simples com tempo médio e pico médio de memória.
 
 ## Interface Streamlit
 
-Execute:
+Também é possível abrir a interface diretamente:
 
 ```bash
 streamlit run app.py
 ```
 
-A interface permite configurar tamanhos dos grafos, densidade, repetições e semente. Ela apresenta métricas, tabela, download em CSV e gráficos interativos de tempo e memória.
+A interface Streamlit foi organizada para apoiar a apresentação do trabalho. Ela possui:
+
+- **Barra lateral de parâmetros**: quantidade de vértices por teste, proporção de arestas do grafo, execuções por tamanho e semente de geração dos grafos.
+- **Resumo dos parâmetros**: maior grafo, arestas previstas, execuções totais e indicação de que Dijkstra e Floyd-Warshall usam o mesmo grafo.
+- **Métricas principais**: maior grafo, densidade, algoritmo mais rápido e algoritmo com menor uso aproximado de memória.
+- **Resultados principais**: gráficos de tempo médio de execução e uso aproximado de memória.
+- **Comparações complementares**: gráficos auxiliares de tempo por algoritmo, razão de tempo, distribuição de arestas, tempo por densidade e tempo por arestas.
+- **Tabela de resultados**: dados resumidos com opção de download em CSV.
+
+O dashboard usa gráficos interativos para facilitar a comparação entre os algoritmos e a explicação dos resultados durante a apresentação.
 
 ## Testes
 
