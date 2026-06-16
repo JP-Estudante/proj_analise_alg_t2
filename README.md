@@ -11,10 +11,11 @@ Os grafos gerados são direcionados, fortemente conexos e possuem apenas pesos p
 
 ```text
 .
-├── app.py                         # Interface Streamlit
-├── pages/
+├── app.py                         # Roteador da interface Streamlit
+├── app_pages/
+│   ├── dashboard.py               # Dashboard principal
 │   ├── dinamica.py                # Geração de CSVs para a atividade da turma
-│   └── resultados-dinamica.py     # Análise coletiva dos CSVs importados
+│   └── resultados_dinamica.py     # Análise coletiva dos CSVs importados
 ├── requirements.txt               # Dependências
 ├── pyproject.toml                 # Configuração do pacote
 ├── src/caminho_minimo/

@@ -27,13 +27,6 @@ RANGES = (
 )
 
 
-st.set_page_config(
-    page_title="Dinâmica Da Turma",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-)
-
-
 def ensure_seed() -> int:
     if "dynamic_page_seed" not in st.session_state:
         st.session_state.dynamic_page_seed = random.SystemRandom().randint(1000, 999999)

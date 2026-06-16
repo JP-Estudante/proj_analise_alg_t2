@@ -68,13 +68,6 @@ CHART_TOOLTIPS = {
 }
 
 
-st.set_page_config(
-    page_title="Resultados Da Dinâmica",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-)
-
-
 def style_chart(fig, height: int = 370) -> None:
     fig.update_layout(
         template="plotly_white",
