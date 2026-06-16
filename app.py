@@ -20,13 +20,6 @@ from caminho_minimo.benchmark import run_benchmarks, summarize_results  # noqa: 
 
 
 DENSITY_SWEEP_MAX_VERTICES = 80
-ACTIVITY_FIXED_DENSITY = 0.35
-ACTIVITY_FIXED_REPETITIONS = 5
-ACTIVITY_VERTEX_RANGES = (
-    ("Grafo Pequeno", 30, 45),
-    ("Grafo Médio", 46, 60),
-    ("Grafo Grande", 61, 75),
-)
 
 
 ROUTE_ICON_SVG = """
@@ -154,6 +147,10 @@ st.markdown(
         background: linear-gradient(180deg, #FFFFFF 0%, #FFF8DD 100%);
         border-right: 1px solid rgba(17, 24, 68, 0.12);
         box-shadow: 8px 0 28px rgba(17, 24, 68, 0.10);
+    }
+
+    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] {
+        display: none;
     }
 
     section[data-testid="stSidebar"] div[data-testid="stSidebarHeader"] {
@@ -699,30 +696,19 @@ def parse_sizes(raw_sizes: str) -> list[int]:
     return sizes
 
 
-def ensure_activity_seed() -> int:
-    if "activity_seed" not in st.session_state:
-        st.session_state.activity_seed = random.SystemRandom().randint(1000, 999999)
-    return int(st.session_state.activity_seed)
-
-
 def ensure_manual_seed() -> int:
     if "manual_seed" not in st.session_state:
         st.session_state.manual_seed = random.SystemRandom().randint(1000, 999999)
     return int(st.session_state.manual_seed)
 
 
-def build_activity_sizes(seed: int) -> list[int]:
-    rng = random.Random(seed)
-    return [rng.randint(start, end) for _, start, end in ACTIVITY_VERTEX_RANGES]
-
-
-def build_activity_size_defaults() -> list[int]:
-    seed = ensure_activity_seed()
-    return build_activity_sizes(seed)
-
-
 @st.cache_data(show_spinner=False)
-def cached_benchmark(sizes: tuple[int, ...], density: float, repetitions: int, seed: int) -> pd.DataFrame:
+def cached_benchmark(
+    sizes: tuple[int, ...],
+    density: float,
+    repetitions: int,
+    seed: int,
+) -> pd.DataFrame:
     results = run_benchmarks(list(sizes), density, repetitions, seed)
     dataframe = pd.DataFrame(summarize_results(results))
     dataframe["seed"] = seed
@@ -1013,93 +999,40 @@ with st.sidebar:
         """,
         unsafe_allow_html=True,
     )
-    activity_mode = st.toggle(
-        "Atividade Dinâmica Da Turma",
-        value=st.session_state.get("activity_mode", False),
-        key="activity_mode_toggle",
-        help="Ativa um roteiro fixo para a turma: um grafo pequeno, um médio e um grande, com densidade 0.35 e 5 execuções por tamanho.",
-    )
-    st.session_state.activity_mode = activity_mode
-
-    activity_seed = ensure_activity_seed()
-    activity_defaults = build_activity_size_defaults()
     manual_seed_default = ensure_manual_seed()
 
-    if activity_mode:
-        activity_cols = st.columns(3)
-        activity_sizes: list[int] = []
-        for index, ((label, start, end), default_value) in enumerate(zip(ACTIVITY_VERTEX_RANGES, activity_defaults)):
-            with activity_cols[index]:
-                selected_vertices = st.selectbox(
-                    label,
-                    options=list(range(start, end + 1)),
-                    index=default_value - start,
-                    key=f"activity_vertices_{index}",
-                    help=f"Escolha a quantidade de vértices para o {label.lower()} dentro da faixa {start} a {end}.",
-                )
-                activity_sizes.append(int(selected_vertices))
-        density = st.slider(
-            "Proporção De Arestas Do Grafo",
-            min_value=0.05,
-            max_value=1.0,
-            value=ACTIVITY_FIXED_DENSITY,
-            step=0.05,
-            disabled=True,
-            key="activity_density_slider",
-            help="Neste modo, a densidade fica fixa em 0.35 para manter a comparação igual para toda a turma.",
-        )
-        repetitions = st.slider(
-            "Execuções Por Tamanho",
-            min_value=1,
-            max_value=10,
-            value=ACTIVITY_FIXED_REPETITIONS,
-            disabled=True,
-            key="activity_repetitions_slider",
-            help="Neste modo, o número de execuções fica fixo em 5 para toda a turma.",
-        )
-        seed = st.number_input(
-            "Semente De Geração Dos Grafos",
-            min_value=0,
-            value=activity_seed,
-            step=1,
-            key="activity_seed_input",
-            help="A seed é gerada automaticamente no início da sessão, mas pode ser alterada para criar outra combinação de grafos.",
-        )
-        sizes = activity_sizes
-        raw_sizes = ""
-    else:
-        raw_sizes = st.text_input(
-            "Quantidade De Vértices Por Teste",
-            value="10,25,50",
-            key="manual_sizes_input",
-            help="Informe os tamanhos dos grafos separados por vírgula. Exemplo: 10,25,50 cria três testes.",
-        )
-        density = st.slider(
-            "Proporção De Arestas Do Grafo",
-            min_value=0.05,
-            max_value=1.0,
-            value=0.35,
-            step=0.05,
-            key="manual_density_slider",
-            help="Controla quão conectado o grafo será. Valores maiores geram mais arestas.",
-        )
-        repetitions = st.slider(
-            "Execuções Por Tamanho",
-            min_value=1,
-            max_value=10,
-            value=3,
-            key="manual_repetitions_slider",
-            help="Define quantas vezes cada tamanho de grafo será testado para calcular médias mais estáveis.",
-        )
-        seed = st.number_input(
-            "Semente De Geração Dos Grafos",
-            min_value=0,
-            value=manual_seed_default,
-            step=1,
-            key="manual_seed_input",
-            help="Mantém os grafos reproduzíveis. Use o mesmo valor para repetir exatamente os mesmos testes.",
-        )
-        st.session_state.manual_seed = int(seed)
+    raw_sizes = st.text_input(
+        "Quantidade De Vértices Por Teste",
+        value="10,25,50",
+        key="manual_sizes_input",
+        help="Informe os tamanhos dos grafos separados por vírgula. Exemplo: 10,25,50 cria três testes.",
+    )
+    density = st.slider(
+        "Proporção De Arestas Do Grafo",
+        min_value=0.05,
+        max_value=1.0,
+        value=0.35,
+        step=0.05,
+        key="manual_density_slider",
+        help="Controla quão conectado o grafo será. Valores maiores geram mais arestas.",
+    )
+    repetitions = st.slider(
+        "Execuções Por Tamanho",
+        min_value=1,
+        max_value=10,
+        value=3,
+        key="manual_repetitions_slider",
+        help="Define quantas vezes cada tamanho de grafo será testado para calcular médias mais estáveis.",
+    )
+    seed = st.number_input(
+        "Semente De Geração Dos Grafos",
+        min_value=0,
+        value=manual_seed_default,
+        step=1,
+        key="manual_seed_input",
+        help="Mantém os grafos reproduzíveis. Use o mesmo valor para repetir exatamente os mesmos testes.",
+    )
+    st.session_state.manual_seed = int(seed)
     run_button = st.button(
         "Executar Comparação",
         type="primary",
@@ -1107,13 +1040,12 @@ with st.sidebar:
         use_container_width=True,
     )
     try:
-        sidebar_sizes = sizes if activity_mode else parse_sizes(raw_sizes)
+        sidebar_sizes = parse_sizes(raw_sizes)
         sidebar_largest = max(sidebar_sizes)
         sidebar_total_executions = len(sidebar_sizes) * repetitions * 2
         sidebar_max_edges = sidebar_largest * (sidebar_largest - 1)
         sidebar_edges = max(sidebar_largest, round(sidebar_max_edges * density))
         sidebar_sizes_text = ", ".join(str(size) for size in sidebar_sizes)
-        sidebar_ranges_text = "30-45 | 46-60 | 61-75" if activity_mode else ""
         sidebar_estimated_time = format_estimated_time(
             estimate_dashboard_execution_time(sidebar_sizes, density, repetitions)
         )
@@ -1122,18 +1054,7 @@ with st.sidebar:
         sidebar_total_executions = "-"
         sidebar_edges = "-"
         sidebar_sizes_text = "Inválido"
-        sidebar_ranges_text = ""
         sidebar_estimated_time = "-"
-    sidebar_ranges_row = (
-        f'<div class="sidebar-summary-row"><span class="sidebar-summary-label">Faixas Fixas</span><span class="sidebar-summary-value">{sidebar_ranges_text}</span></div>'
-        if activity_mode
-        else ""
-    )
-    sidebar_status_text = (
-        "Atividade dinâmica da turma"
-        if activity_mode
-        else "Dijkstra e Floyd-Warshall no mesmo grafo"
-    )
     sidebar_summary_html = (
         '<div class="sidebar-summary">'
         '<div class="sidebar-summary-title">Resumo</div>'
@@ -1141,20 +1062,18 @@ with st.sidebar:
         f'<div class="sidebar-summary-row"><span class="sidebar-summary-label">Maior Grafo</span><span class="sidebar-summary-value">{sidebar_largest}</span></div>'
         f'<div class="sidebar-summary-row"><span class="sidebar-summary-label">Arestas Previstas</span><span class="sidebar-summary-value">{sidebar_edges}</span></div>'
         f'<div class="sidebar-summary-row"><span class="sidebar-summary-label">Execuções Totais</span><span class="sidebar-summary-value">{sidebar_total_executions}</span></div>'
-        f"{sidebar_ranges_row}"
         f'<div class="sidebar-summary-row"><span class="sidebar-summary-label">Seed Atual</span><span class="sidebar-summary-value">{int(seed)}</span></div>'
         f'<div class="sidebar-summary-row"><span class="sidebar-summary-label">Tempo Estimado</span><span class="sidebar-summary-value">{sidebar_estimated_time}</span></div>'
-        f'<div class="sidebar-status"><span class="sidebar-status-dot"></span><span>{sidebar_status_text}</span></div>'
+        '<div class="sidebar-status"><span class="sidebar-status-dot"></span><span>Dijkstra e Floyd-Warshall no mesmo grafo</span></div>'
         "</div>"
     )
     st.markdown(sidebar_summary_html, unsafe_allow_html=True)
 
-if not activity_mode:
-    try:
-        sizes = parse_sizes(raw_sizes)
-    except ValueError:
-        st.error("Informe tamanhos válidos, separados por vírgula, todos maiores ou iguais a 2.")
-        st.stop()
+try:
+    sizes = parse_sizes(raw_sizes)
+except ValueError:
+    st.error("Informe tamanhos válidos, separados por vírgula, todos maiores ou iguais a 2.")
+    st.stop()
 
 if (
     run_button
@@ -1162,7 +1081,12 @@ if (
     or "seed" not in st.session_state.benchmark_df.columns
 ):
     with st.spinner("Executando testes..."):
-        st.session_state.benchmark_df = cached_benchmark(tuple(sizes), density, repetitions, int(seed))
+        st.session_state.benchmark_df = cached_benchmark(
+            tuple(sizes),
+            density,
+            repetitions,
+            int(seed),
+        )
 
 df = st.session_state.benchmark_df
 

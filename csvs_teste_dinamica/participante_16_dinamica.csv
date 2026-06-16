@@ -1,0 +1,7 @@
+Modo,Categoria Do Grafo,Seed,Algoritmo,Vértices,Arestas,Densidade,Repetições,Tempo Médio (s),Memória Média (KB)
+Dinâmica Da Turma,Pequeno,14192,Dijkstra (todas as origens),35,416,0.3495798319327731,5,0.0015828433999558911,10.6359375
+Dinâmica Da Turma,Pequeno,14192,Floyd-Warshall,35,416,0.3495798319327731,5,0.0019211573999200482,10.265625
+Dinâmica Da Turma,Médio,14192,Dijkstra (todas as origens),46,724,0.3497584541062802,5,0.0031363030004285973,17.5125
+Dinâmica Da Turma,Médio,14192,Floyd-Warshall,46,724,0.3497584541062802,5,0.004047568199894158,17.76875
+Dinâmica Da Turma,Grande,14192,Dijkstra (todas as origens),75,1942,0.3499099099099099,5,0.010917038600200612,45.7328125
+Dinâmica Da Turma,Grande,14192,Floyd-Warshall,75,1942,0.3499099099099099,5,0.016284694799833233,48.4765625

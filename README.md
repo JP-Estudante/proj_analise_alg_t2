@@ -12,6 +12,9 @@ Os grafos gerados são direcionados, fortemente conexos e possuem apenas pesos p
 ```text
 .
 ├── app.py                         # Interface Streamlit
+├── pages/
+│   ├── dinamica.py                # Geração de CSVs para a atividade da turma
+│   └── resultados-dinamica.py     # Análise coletiva dos CSVs importados
 ├── requirements.txt               # Dependências
 ├── pyproject.toml                 # Configuração do pacote
 ├── src/caminho_minimo/
@@ -124,6 +127,15 @@ A interface Streamlit foi organizada para apoiar a apresentação do trabalho. E
 - **Tabela de resultados**: dados resumidos com opção de download em CSV.
 
 O dashboard usa gráficos interativos para facilitar a comparação entre os algoritmos e a explicação dos resultados durante a apresentação.
+
+### Páginas da atividade dinâmica
+
+Além do dashboard principal, o projeto possui duas páginas diretas para a dinâmica da turma:
+
+- `/dinamica`: página simples para cada aluno escolher um grafo pequeno, médio e grande, executar a comparação e baixar o CSV da dinâmica.
+- `/resultados-dinamica`: página para o apresentador importar múltiplos CSVs da turma, consolidar os dados e visualizar gráficos agregados.
+
+A página principal continua sendo apenas o dashboard normal. A atividade dinâmica fica separada para não misturar a apresentação geral com a coleta dos resultados da turma.
 
 ## Testes
 
